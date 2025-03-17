@@ -1,0 +1,92 @@
+[project]
+name = "ai-sport-predict"
+description = "AI model trained to predict tennis matches results"
+readme = "README.md"
+requires-python = ">=3.13"
+authors = [{ name = "Ádran Carnavale", email = "adran.carnavale@gmail.com" }]
+license = "MIT"
+dynamic = ["version"]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/crnvl96/ai-sports-predict"
+
+[dependency-groups]
+dev = []
+# "pytest>=8.3.5",
+# "pytest-cov>=6.0.0",
+# "pytest-mock>=3.14.0",
+# "ruff>=0.11.0",
+# "basedpyright>=1.15.0",
+# "codespell>=2.4.1",
+# "rich>=13.9.4",
+
+# Dynamic versioning from:
+# https://github.com/ninoseki/uv-dynamic-versioning/
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
+
+# Note JSON schemas don't seem to be right for tool.hatch.version.source so this may cause false warnings in IDEs.
+# https://github.com/ninoseki/uv-dynamic-versioning/issues/21
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[tool.uv-dynamic-versioning]
+vcs = "git"
+style = "pep440"
+bump = "true"
+
+[tool.basedpyright]
+include = ["src"]
+exclude = ["**/__pycache__", "**/.venv"]
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "COM812", # https://docs.astral.sh/ruff/rules/missing-trailing-comma/#formatter-compatibility
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/{tests}/*" = [
+  "S101", # https://docs.astral.sh/ruff/rules/assert/
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+  "unit: Unit tests",
+  "integration: Tests requiring external services/APIs",
+  "slow: Long-running tests (>5s execution time)",
+  "db: Tests requiring database access",
+]
+addopts = [
+  "-v",                        # Verbose output (show individual test names)
+  "--strict-markers",          # Enforce strict marker usage (markers must be registered in pytest.ini)
+  "--cov=src",                 # Enable coverage reporting for code in 'src' directory
+  "--cov-report=term-missing", # Show missing lines in terminal report
+  "--cov-report=html",         # Generate HTML coverage report in htmlcov/
+  "--cov-branch",              # Measure branch coverage (conditionals coverage)
+  "--no-cov-on-fail",          # Skip coverage reports if tests fail
+  "--durations=5",             # Show 5 slowest tests
+  "--exitfirst",               # Stop after first failure (a.k.a --lf)
+  "--doctest-modules",         # Run doctests in .py files (if used)
+  "-Werror",                   # Treat warnings as errors
+  "-n auto",                   # Parallelize tests across CPU cores
+  "--color=yes",               # Force color output
+  "--tb=short",                # Shorter traceback format
+]
+
+[tool.coverage.run]
+omit = ["*/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = ["if TYPE_CHECKING:", "pragma: no cover"]
